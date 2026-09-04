@@ -25,3 +25,39 @@
   padding: 0.625rem 0.5rem;
   background-color: #f0f0f0;
 }
+
+/*
+ * Rediseño del login de Didopet (store/blocks/login.jsonc) — banda de marca
+ * full-width con el logo, y card centrada con el formulario nativo de
+ * vtex.login. Mockup aprobado 2026-09-04.
+ */
+.flexRowContent--login-logo-row {
+  background-color: #65ce00;
+  padding: 1.1rem 1rem;
+}
+
+.flexRowContent--login-form {
+  width: 100%;
+  max-width: 22rem;
+  margin: 1.5rem auto 2.25rem;
+  padding: 1.5rem 1.35rem;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(22, 36, 26, 0.08);
+  border: 1px solid #eef1e8;
+}
+
+@media screen and (min-width: 40em) {
+  .flexRowContent--login-logo-row {
+    padding: 1.9rem 1rem;
+  }
+
+  .flexRowContent--login-form {
+    max-width: 30rem;
+    margin: 3rem auto 3.5rem;
+    padding: 2.75rem 2.5rem;
+    border-radius: 14px;
+    box-shadow: 0 20px 45px -22px rgba(22, 36, 26, 0.28);
+    border: 1px solid #eef1e8;
+  }
+}
