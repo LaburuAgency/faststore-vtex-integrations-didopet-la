@@ -96,6 +96,13 @@
   flex-direction: column;
 }
 
+/* Centra el formulario ("Entrar con e-mail y contraseña") dentro del card */
+:global(.vtex-login-2-x-contentForm) {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
 :global(.vtex-login-2-x-loginOptionsContainer) {
   width: 100%;
   margin-bottom: 1.75rem;
