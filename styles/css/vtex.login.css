@@ -1,0 +1,174 @@
+/*
+ * Rediseño de marca de Didopet para la página de login hospedada por
+ * vtex.login (store.login). Mockup aprobado 2026-09-04 (banda de marca +
+ * card centrada, ver store/blocks/login.jsonc y styles/css/vtex.flex-layout.css
+ * para el layout estructural — este archivo solo pule los componentes
+ * internos nativos de vtex.login).
+ *
+ * CSS handles verificados en vivo (workspace claudebranding,
+ * https://claudebranding--didopet.myvtex.com/login, 2026-09-03/04) via
+ * componente inspeccionado en el navegador.
+ *
+ * Paleta y tipografía tomadas de faststore-didopet-la/src/themes/custom-theme.scss
+ * (--fs-color-main-2, --fs-text-face-title, --fs-text-face-body).
+ *
+ * Montserrat/Open Sans no estaban cargadas en ningún lugar de este tema
+ * (confirmado: no hay styles/config ni @import previo) — se cargan acá.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Open+Sans:wght@400;600;700&display=swap");
+
+:root {
+  --didopet-color-primary: #65ce00;
+  --didopet-color-primary-deep: #4c9c00;
+  --didopet-color-primary-text: #ffffff;
+  --didopet-color-ink: #16241a;
+  --didopet-font-title: "Montserrat", -apple-system, system-ui, BlinkMacSystemFont, sans-serif;
+  --didopet-font-body: "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, sans-serif;
+}
+
+/*
+ * Fix de desborde horizontal (confirmado en vivo): el badge de Google
+ * reCAPTCHA que inyecta vtex.login (.grecaptcha-badge) es position:fixed
+ * con right:-186px y width:256px — sobresale ~70px del viewport a
+ * propósito (Google lo posiciona así, con visibility:hidden, para que solo
+ * la pestaña quede accesible). Al no tener overflow-x:hidden en ningún
+ * lado del tema, ese excedente generaba scroll horizontal fantasma en
+ * TODO el sitio, no solo en login. Fix estándar y de bajo riesgo: no oculta
+ * ni cambia el badge (sigue siendo funcional/legal), solo recorta el
+ * desborde de la ventana.
+ */
+:global(html) {
+  overflow-x: hidden;
+}
+
+/*
+ * Oculta el header compartido del sitio (store/blocks/header.jsonc) SOLO en
+ * la ruta de login — no se toca header.jsonc, que sigue sirviendo al resto
+ * del storefront IO (My Account, Order Placed, etc.) sin cambios. Route
+ * scoping confirmado en vivo: VTEX IO agrega la clase
+ * "render-route-store-login" al contenedor raíz de esta página.
+ * .vtex-sticky-layout-0-x-wrapper es, en esta ruta, exclusivamente el
+ * wrapper del header (login.jsonc no declara ningún sticky-layout propio).
+ */
+:global(.render-route-store-login) :global(.vtex-sticky-layout-0-x-wrapper) {
+  display: none;
+}
+
+/*
+ * Logo dentro de la banda verde (fondo lo da .flexRowContent--login-logo-row
+ * en vtex.flex-layout.css). El wrapper que flex-layout genera para un hijo
+ * suelto (.vtex-flex-layout-0-x-stretchChildrenWidth) ocupa el 100% del
+ * ancho de la banda, así que "justify-content: center" en la fila no tiene
+ * efecto visible — el logo quedaba pegado a la izquierda. Se centra acá
+ * con margin:auto, ya el contenedor es block-level por el display:flex.
+ */
+:global(.vtex-store-components-3-x-logoContainer--login-logo) {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* Título "Escoja una opción para entrar" — headline del card */
+:global(.vtex-login-2-x-formTitle) {
+  font-family: var(--didopet-font-title);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  color: var(--didopet-color-ink);
+  margin-bottom: 1rem;
+}
+
+/* Cuerpo de texto general del formulario */
+:global(.vtex-login-2-x-content),
+:global(.vtex-login-2-x-loginOptionsContainer) {
+  font-family: var(--didopet-font-body);
+}
+
+/*
+ * Nativamente vtex.login pone las "opciones" y el contenido activo lado a
+ * lado (display:flex, flex-direction:row) en .content — el modifier
+ * cambia según el paso (--emailAndPassword, --emailVerification al elegir
+ * "código de acceso", etc.). Se fuerza en la clase BASE (no en un
+ * modifier puntual) para cubrir todos los pasos del flujo por igual.
+ */
+:global(.vtex-login-2-x-content) {
+  flex-direction: column;
+}
+
+:global(.vtex-login-2-x-loginOptionsContainer) {
+  width: 100%;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.75rem;
+  border-bottom: 1px solid #e6ebdd;
+}
+
+/* Subtítulo "Entrar con e-mail y contraseña" */
+:global(.vtex-login-2-x-content) h3 {
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+  color: var(--didopet-color-ink);
+}
+
+/*
+ * Inputs de e-mail/contraseña. El borde visible NO vive en el <input>
+ * (vtex-styleguide-9-x-input tiene border: 0), sino en su wrapper
+ * .vtex-input-prefix__group (clase genérica de vtex.styleguide, sin
+ * namespace de versión) — acotado siempre a .vtex-login-2-x-inputContainer
+ * para no afectar inputs de otras páginas (buscador, checkout, etc.).
+ */
+:global(.vtex-login-2-x-inputContainer) :global(.vtex-input-prefix__group) {
+  border-radius: 8px;
+  border-color: #e1e6d7;
+  background: #fbfbf8;
+}
+
+:global(.vtex-login-2-x-inputContainer) :global(.vtex-input-prefix__group):focus-within {
+  border-color: var(--didopet-color-primary);
+  box-shadow: 0 0 0 1px var(--didopet-color-primary);
+}
+
+:global(.vtex-login-2-x-inputContainer) :global(.vtex-styleguide-9-x-input) {
+  font-family: var(--didopet-font-body);
+  background: transparent;
+}
+
+/* Botón "Entrar" (envío del formulario) — pill verde de marca */
+:global(.vtex-login-2-x-sendButton) :global(.vtex-button) {
+  background: var(--didopet-color-primary);
+  border-color: var(--didopet-color-primary);
+  color: var(--didopet-color-primary-text);
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+  border-radius: 100px;
+  width: 100%;
+}
+
+:global(.vtex-login-2-x-sendButton) :global(.vtex-button):hover {
+  background: var(--didopet-color-primary-deep);
+  border-color: var(--didopet-color-primary-deep);
+}
+
+/* Link "Olvidé mi contraseña" y "¿No tiene una cuenta? Regístrese" */
+:global(.vtex-login-2-x-forgotPasswordLink) {
+  color: var(--didopet-color-primary-deep);
+  font-weight: 700;
+}
+
+/*
+ * Botones de opción del login: "Recibir código de acceso por e-mail" y su
+ * contraparte "Entrar con e-mail y contraseña" (se muestra al elegir la
+ * opción de código). Handles reales confirmados en vivo:
+ * .vtex-login-2-x-accessCodeOptionBtn / .vtex-login-2-x-emailPasswordOptionBtn
+ * (envuelven el vtex.styleguide button dentro de .vtex-login-2-x-optionsListItem).
+ */
+:global(.vtex-login-2-x-accessCodeOptionBtn) :global(.vtex-button),
+:global(.vtex-login-2-x-emailPasswordOptionBtn) :global(.vtex-button) {
+  font-family: var(--didopet-font-body);
+  font-weight: 700;
+  color: var(--didopet-color-primary-deep);
+  background: #eaf6dc;
+  border: 1px solid #d9ecc4;
+  border-radius: 100px;
+  width: 100%;
+}

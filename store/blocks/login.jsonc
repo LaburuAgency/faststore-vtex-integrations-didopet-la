@@ -1,6 +1,36 @@
 {
   "store.login": {
-    "blocks": ["login-content#default"]
+    "blocks": ["flex-layout.row#login-logo", "flex-layout.row#login-form"]
+  },
+
+  "flex-layout.row#login-logo": {
+    "props": {
+      "blockClass": "login-logo-row",
+      "horizontalAlign": "center",
+      "verticalAlign": "middle",
+      "fullWidth": true
+    },
+    "children": ["logo#login"]
+  },
+
+  "logo#login": {
+    "props": {
+      "title": "Didopet",
+      "href": "https://www.innovacionsamurai.com/",
+      "url": "assets/logo-didopet-login.svg",
+      "width": "140",
+      "blockClass": "login-logo"
+    }
+  },
+
+  "flex-layout.row#login-form": {
+    "props": {
+      "blockClass": "login-form",
+      "horizontalAlign": "center",
+      "verticalAlign": "middle",
+      "fullWidth": true
+    },
+    "children": ["login-content#default"]
   },
 
   "login-content#default": {
