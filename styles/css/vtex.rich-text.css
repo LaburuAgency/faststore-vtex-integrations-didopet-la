@@ -1,0 +1,32 @@
+/*
+ * "Volver a la tienda" (store/blocks/header.jsonc, rich-text#back-to-store con
+ * blockClass "back-to-store-link"). Vive en su propio archivo vtex.rich-text.css —
+ * NO en vtex.flex-layout.css — porque el nombre del archivo debe coincidir con la app
+ * cuyas clases se están pisando: solo así las clases sueltas (sin :global()) se
+ * auto-prefijan correctamente a "vtex-rich-text-0-x-*" en vez de a
+ * "vtex-flex-layout-0-x-*". El <a> generado por Markdown trae el azul/subrayado por
+ * defecto del navegador — no hereda textColor/font del bloque porque esos estilos de
+ * user-agent no se heredan, hay que pisarlos acá explícitamente.
+ */
+.container--back-to-store-link .link {
+  color: var(--didopet-color-primary-text);
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+/* la flecha va por ::before (no en el texto/markdown) para controlar su propio
+   margen sin afectar el espaciado entre el resto de las palabras — con word-spacing
+   quedaba toda la frase separada ("Volver   a   la   tienda"), no solo la flecha. */
+.container--back-to-store-link .link::before {
+  content: "←";
+  margin-right: 0.5em;
+}
+
+.container--back-to-store-link .link:hover {
+  text-decoration: underline;
+}

@@ -34,7 +34,8 @@
     },
     "children": [
       "flex-layout.col#logo-desktop",
-      "flex-layout.col#spacer"
+      "flex-layout.col#spacer",
+      "flex-layout.col#back-to-store"
     ]
   },
   "flex-layout.col#logo-desktop": {
@@ -45,10 +46,28 @@
   },
   "logo#desktop": {
     "props": {
-      "title": "Logo",
-      "href": "https://www.vtexfaststore.com/",
-      "url": "assets/logo.svg",
-      "width": "180"
+      "title": "Didopet",
+      "href": "https://www.innovacionsamurai.com/",
+      "url": "assets/logo-didopet-login.svg",
+      "width": "56"
+    }
+  },
+  // Link "Volver a la tienda": solo se muestra en /account (ver
+  // .back-to-store en vtex.flex-layout.css, acotado a .render-route-store-account),
+  // en el resto de páginas queda oculto vía CSS.
+  "flex-layout.col#back-to-store": {
+    "props": {
+      "verticalAlign": "middle",
+      "blockClass": "back-to-store"
+    },
+    "children": ["rich-text#back-to-store"]
+  },
+  "rich-text#back-to-store": {
+    "props": {
+      "text": "[Volver a la tienda](/)",
+      "font": "t-action--small",
+      "textColor": "c-on-emphasis",
+      "blockClass": "back-to-store-link"
     }
   },
 
@@ -73,10 +92,10 @@
   },
   "logo#mobile": {
     "props": {
-      "title": "Logo",
-      "href": "https://www.vtexfaststore.com/",
-      "url": "assets/logo.svg",
-      "width": "90"
+      "title": "Didopet",
+      "href": "https://www.innovacionsamurai.com/",
+      "url": "assets/logo-didopet-login.svg",
+      "width": "42"
     }
   }
 }

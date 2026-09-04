@@ -17,14 +17,24 @@
 }
 
 .flexRowContent--main-header {
-  background-color: #f0f0f0;
+  background-color: var(--didopet-color-primary);
 }
 
 .flexRowContent--main-header-mobile {
   align-items: center;
   padding: 0.625rem 0.5rem;
-  background-color: #f0f0f0;
+  background-color: var(--didopet-color-primary);
 }
+
+/*
+ * Link "Volver a la tienda": se decidió mostrarlo siempre (no solo en /account).
+ * Se intentó acotarlo por ruta con ".render-route-store-account …", pero VTEX
+ * rechaza en el build cualquier combinador (espacio) apenas :global() entra en la
+ * regla — y sin :global() las clases ajenas a flex-layout (como render-route-store-*
+ * o las de vtex.rich-text) quedan mal auto-prefijadas con "vtex-flex-layout-0-x-"
+ * (confirmado en vivo). El estilo del link en sí vive en styles/css/vtex.rich-text.css
+ * en vez de acá, por la misma razón — ver ese archivo para el detalle.
+ */
 
 /*
  * Rediseño del login de Didopet (store/blocks/login.jsonc) — banda de marca

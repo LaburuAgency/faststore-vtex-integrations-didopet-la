@@ -1,0 +1,483 @@
+/*
+ * Rediseño de marca de Didopet para /account (store.account → vtex.my-account),
+ * en la misma línea visual de store/blocks/login.jsonc / styles/css/vtex.login.css
+ * (banda/card verde, Montserrat + Open Sans, botones píldora, inputs con borde 8px).
+ *
+ * A diferencia de login, estos handles NO se verificaron en vivo (implicaría iniciar
+ * sesión, algo que no se puede automatizar) — se obtuvieron leyendo el código fuente
+ * público de las apps involucradas, fijado a las versiones que esta tienda realmente
+ * usa (confirmadas contra manifest.json de vtex-apps/my-account @ v1.30.2, que es la
+ * versión que resuelve el dependency range "vtex.my-account": "1.x" de este repo):
+ *   - vtex-apps/my-account @ v1.30.2   → handles vtex-my-account-1-x-*, vtex-account_menu-link, vtex-account
+ *   - vtex/profile-form    @ v3.19.5   → handles vtex-profile-form-3-x-*  (dependency "3.x" en my-account)
+ *   - vtex/address-form    @ v4.29.3   → clases literales vtex-address-form__*  (dependency "4.x")
+ *   - vtex.styleguide       "9.x"      → vtex-button, vtex-input-prefix__group, vtex-styleguide-9-x-input
+ *     (mismas clases genéricas ya usadas en vtex.login.css)
+ *   - vtex.my-authentication v1.9.1 (registro público de apps VTEX, no es dependencia
+ *     declarada de my-account — se instala por defecto en toda cuenta VTEX) → handles
+ *     oficiales documentados en developers.vtex.com, prefijo vtex-my-authentication-1-x-*
+ *
+ * vtex.my-orders-app y vtex.my-cards son apps CERRADAS (sin repo público, confirmado
+ * por soporte de VTEX) — Pedidos y Tarjetas de crédito solo reciben el "piso" de
+ * tipografía/botones/inputs de la sección 8, no hay handles propios para su contenido.
+ *
+ * Cualquier selector de esta hoja puede necesitar ajuste si al hacer `vtex link` la
+ * versión real instalada difiere de la fijada arriba — cada bloque está scopeado de
+ * forma independiente, así que un ajuste puntual no debería afectar al resto.
+ */
+
+/* 1. Fondo de página y tipografía heredada. .vtex-account es el div raíz (sin
+   versión, className literal en vtex-apps/my-account/react/index.tsx) que envuelve
+   TODA la app, incluyendo Pedidos/Tarjetas — por eso sirve de piso seguro aunque esas
+   dos pestañas sean apps cerradas. */
+:global(.vtex-account) {
+  background: #f6f8f2;
+  font-family: var(--didopet-font-body);
+  color: var(--didopet-color-ink);
+}
+
+/* .vtex-account no llega hasta abajo del todo: el footer del sitio (con el badge
+   "Powered by VTEX") es HERMANO de .vtex-account dentro de la misma página, no hijo.
+   render-route-store-account sí envuelve TODA la página (header + contenido +
+   footer) para esta ruta, así que ahí es donde hay que pintar el fondo. */
+:global(.render-route-store-account) {
+  background: #f6f8f2;
+}
+
+/* Pero ni con eso llega: hay un wrapper intermedio (.vtex-store__template, de
+   vtex.store) con fondo blanco explícito que pinta ENCIMA del verde de
+   render-route-store-account justo en la franja del footer — confirmado en vivo
+   recorriendo la cadena de ancestros del badge "Powered by". Se pisa a transparent
+   para que el verde de abajo se vea (no afecta otras rutas: ahí simplemente se ve el
+   blanco de siempre, viniendo del body en vez del template). */
+:global(.vtex-store__template) {
+  background: transparent;
+}
+
+/* Badge "Powered by VTEX": vtex.store-footer no es dependencia declarada en
+   manifest.json, así que un archivo styles/css/vtex.store-footer.css propio NUNCA se
+   compila (confirmado: la regla no aparecía ni en el CSS servido) — por eso se oculta
+   acá con el nombre completo vía :global(), que sí funciona sin declarar la
+   dependencia (igual que :global(.vtex-input-prefix__group) en vtex.login.css). */
+:global(.vtex-store-footer-2-x-poweredBy) {
+  display: none;
+}
+
+/* 1.1 Repintar el color semántico "action-primary" de Tachyons al verde de marca.
+   Confirmado en vivo (vtex link a workspace claudebranding): vtex.styleguide usa estas
+   utilidades para CUALQUIER botón/borde/texto "primario" en toda la app — botón sólido
+   de "Añadir dirección", borde del item activo del menú, texto de "Editar" — y sin esto
+   se quedan con el rosa/magenta por defecto de la tienda (nunca rebrandeado a nivel
+   Tachyons, solo existen los --didopet-* custom properties). Selector explícitamente
+   soportado por VTEX (":global(.tachyons-class)"); se scopea bajo .vtex-account
+   (especificidad 0,2,0) para ganarle de forma confiable a la clase Tachyons sola
+   (especificidad 0,1,0), sin necesitar !important. */
+:global(.vtex-account) :global(.bg-action-primary) {
+  background-color: var(--didopet-color-primary);
+}
+:global(.vtex-account) :global(.hover-bg-action-primary):hover {
+  background-color: var(--didopet-color-primary-deep);
+}
+:global(.vtex-account) :global(.b--action-primary) {
+  border-color: var(--didopet-color-primary);
+}
+:global(.vtex-account) :global(.hover-b--action-primary):hover {
+  border-color: var(--didopet-color-primary-deep);
+}
+:global(.vtex-account) :global(.c-action-primary) {
+  color: var(--didopet-color-primary-deep);
+}
+:global(.vtex-account) :global(.c-on-action-primary) {
+  color: var(--didopet-color-primary-text);
+}
+
+/* 2. Menú/sidebar (react/components/Menu/). Sin íconos por item en esta pasada
+   (decisión: vtex-account_menu-link es una única clase literal compartida por todos
+   los links, sin handle propio por página — distinguir cada uno requeriría selectores
+   de atributo no soportados por VTEX). */
+:global(.vtex-my-account-1-x-menu) {
+  background: #ffffff;
+  border: 1px solid #eef1e8;
+  border-radius: 14px;
+  padding: 1.25rem 1rem;
+}
+
+:global(.vtex-my-account-1-x-userInfo) {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #e6ebdd;
+}
+
+:global(.vtex-my-account-1-x-userImage) {
+  border-radius: 50%;
+}
+
+:global(.vtex-my-account-1-x-userGreeting),
+:global(.vtex-my-account-1-x-userName) {
+  font-family: var(--didopet-font-title);
+  font-weight: 800;
+  color: var(--didopet-color-ink);
+}
+
+:global(.vtex-account_menu-link) {
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--didopet-color-ink);
+  border-radius: 8px;
+  padding: 0.62rem 0.75rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+:global(.vtex-account_menu-link):hover {
+  background: #f4f8ee;
+}
+
+/* Estado activo: la app nativa agrega las clases Tachyons c-on-base + b--action-primary
+   al mismo link cuando corresponde a la ruta actual (confirmado en MenuLink.tsx). El
+   borde izquierdo (b--action-primary) ya queda verde por la sección 1.1. */
+:global(.vtex-account_menu-link):global(.c-on-base) {
+  background: #eaf6dc;
+  color: var(--didopet-color-primary-deep);
+}
+
+/* 3. Card compartida en toda la app (react/components/shared/ContentBox.tsx) —
+   Perfil, Direcciones, Newsletter y los formularios reutilizan este mismo wrapper.
+   Sombra solo en desktop / flat en mobile, igual que la card de login. */
+:global(.vtex-my-account-1-x-boxContainer) {
+  background: #ffffff;
+  border: 1px solid #eef1e8;
+  border-radius: 14px;
+}
+
+@media screen and (min-width: 40em) {
+  :global(.vtex-my-account-1-x-boxContainer) {
+    box-shadow: 0 20px 45px -22px rgba(22, 36, 26, 0.28);
+  }
+}
+
+:global(.vtex-my-account-1-x-boxContainerBody) {
+  padding: 1.35rem 1.15rem;
+}
+
+:global(.vtex-my-account-1-x-boxContainerFooter) {
+  padding: 0 1.15rem 1.35rem;
+}
+
+@media screen and (min-width: 40em) {
+  :global(.vtex-my-account-1-x-boxContainerBody) {
+    padding: 1.9rem 1.75rem;
+  }
+  :global(.vtex-my-account-1-x-boxContainerFooter) {
+    padding: 0 1.75rem 1.9rem;
+  }
+}
+
+/* Botón "Editar" del Perfil (vtex.styleguide Button variation="tertiary" dentro del
+   footer de ContentBox) — mismo tratamiento píldora que el resto de botones. El color
+   de texto (c-action-primary) ya queda verde por la sección 1.1. */
+:global(.vtex-my-account-1-x-boxContainerFooter) :global(.vtex-button) {
+  border-radius: 100px;
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+}
+
+/* 4. Perfil — grid de campos (ProfileBox.tsx + shared/DataEntry.tsx). */
+:global(.vtex-my-account-1-x-dataEntryLabel) {
+  font-family: var(--didopet-font-body);
+  font-weight: 600;
+  font-size: 0.76rem;
+  letter-spacing: 0.02em;
+  color: #494a47;
+}
+
+:global(.vtex-my-account-1-x-dataEntryChildren) {
+  font-family: var(--didopet-font-body);
+  font-size: 0.96rem;
+  color: var(--didopet-color-ink);
+}
+
+/* 5. Boletín informativo (NewsletterBox.tsx) — reutiliza la card de la sección 3,
+   solo se ajusta la tipografía del título/mensaje. */
+:global(.vtex-my-account-1-x-newsletterContainerTitle) {
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--didopet-color-ink);
+}
+
+:global(.vtex-my-account-1-x-newsletterContainerMessage) {
+  font-size: 0.85rem;
+  color: #494a47;
+}
+
+/* Checkbox (vtex.styleguide, clases genéricas confirmadas en vivo: el input real está
+   oculto con opacity:0, el borde visible es .vtex-checkbox__inner-container). Solo se
+   pisa el color de borde para que combine con el resto de los inputs de marca —
+   colorear el estado "marcado" en verde requeriría :has(), no confirmado como
+   selector soportado por VTEX, así que se deja fuera de esta pasada. */
+:global(.vtex-checkbox__inner-container) {
+  border-color: #e1e6d7;
+}
+
+/* 6. Editar perfil (vtex.profile-form). Los inputs reales son primitivos de
+   vtex.styleguide (mismas clases genéricas que ya usa vtex.login.css); los campos de
+   persona jurídica (corporateName, tradeName, etc.) no tienen wrapper individual en el
+   código fuente, así que solo heredan el estilo de input/botón de más abajo. */
+:global(.vtex-my-account-1-x-profileFormBoxContainer) :global(.vtex-input-prefix__group) {
+  border-radius: 8px;
+  border-color: #e1e6d7;
+  background: #fbfbf8;
+}
+
+:global(.vtex-my-account-1-x-profileFormBoxContainer) :global(.vtex-input-prefix__group):focus-within {
+  border-color: var(--didopet-color-primary);
+  box-shadow: 0 0 0 1px var(--didopet-color-primary);
+}
+
+:global(.vtex-my-account-1-x-profileFormBoxContainer) :global(.vtex-styleguide-9-x-input) {
+  font-family: var(--didopet-font-body);
+  background: transparent;
+}
+
+:global(.vtex-my-account-1-x-profileFormBoxContainer) :global(.vtex-button) {
+  background: var(--didopet-color-primary);
+  border-color: var(--didopet-color-primary);
+  color: var(--didopet-color-primary-text);
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+  border-radius: 100px;
+  width: 100%;
+}
+
+:global(.vtex-my-account-1-x-profileFormBoxContainer) :global(.vtex-button):hover {
+  background: var(--didopet-color-primary-deep);
+  border-color: var(--didopet-color-primary-deep);
+}
+
+/* Espaciado entre campos (wrapper por campo de ProfileFieldWrapper.js, prefijo
+   "profileForm-" + nombre del campo — lista completa confirmada en react/rules/default.js). */
+:global(.vtex-profile-form-3-x-profileForm-firstName),
+:global(.vtex-profile-form-3-x-profileForm-lastName),
+:global(.vtex-profile-form-3-x-profileForm-email),
+:global(.vtex-profile-form-3-x-profileForm-document),
+:global(.vtex-profile-form-3-x-profileForm-homePhone),
+:global(.vtex-profile-form-3-x-profileForm-gender),
+:global(.vtex-profile-form-3-x-profileForm-birthDate) {
+  margin-bottom: 1.05rem;
+}
+
+/* 7. Direcciones (Addresses.tsx, AddressBox.tsx, AddressSummary.js). El estado vacío
+   usa el EmptyState de vtex.styleguide, que no expone ningún handle ni clase propia
+   (confirmado en su código fuente) — su tipografía ya queda cubierta por la cascada
+   de la sección 1, no hay selector específico que agregar acá. */
+/* "Añadir dirección": vtex-apps/my-account arma este link vía su sistema de
+   content-wrapper (headerConfig), que le da la clase LITERAL "newAddressButton" (sin
+   prefijo vtex-my-account-1-x-, confirmado en vivo — el código fuente sugería el
+   prefijo pero en el DOM real no aparece). El botón visible es un <button> hijo con
+   las clases Tachyons de acción primaria, ya cubiertas por la sección 1.1 + el piso de
+   la sección 10 para el radio de píldora. */
+:global(.newAddressButton) {
+  text-decoration: none;
+}
+
+/* Resumen de dirección dentro de la card — acotado bajo addressBox porque
+   vtex.address-form usa clases literales genéricas (.street, .city, etc. sin
+   namespace) que también aparecen en otras páginas que usan la misma app (ej. checkout). */
+:global(.vtex-my-account-1-x-addressBox) :global(.street),
+:global(.vtex-my-account-1-x-addressBox) :global(.number),
+:global(.vtex-my-account-1-x-addressBox) :global(.complement),
+:global(.vtex-my-account-1-x-addressBox) :global(.neighborhood),
+:global(.vtex-my-account-1-x-addressBox) :global(.city),
+:global(.vtex-my-account-1-x-addressBox) :global(.state),
+:global(.vtex-my-account-1-x-addressBox) :global(.postalCode),
+:global(.vtex-my-account-1-x-addressBox) :global(.receiverName) {
+  font-family: var(--didopet-font-body);
+  color: var(--didopet-color-ink);
+}
+
+:global(.vtex-my-account-1-x-addressBox) :global(.vtex-button) {
+  border-radius: 100px;
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+}
+
+/* 8. Formulario de Añadir/Editar dirección (vtex.address-form — clases literales sin
+   versión, react/inputs/StyleguideInput/index.js). */
+:global(.vtex-address-form__container) {
+  font-family: var(--didopet-font-body);
+}
+
+:global(.vtex-address-form__postalCode),
+:global(.vtex-address-form__street),
+:global(.vtex-address-form__number),
+:global(.vtex-address-form__complement),
+:global(.vtex-address-form__neighborhood),
+:global(.vtex-address-form__city),
+:global(.vtex-address-form__state),
+:global(.vtex-address-form__receiverName),
+:global(.vtex-address-form__country) {
+  margin-bottom: 1.05rem;
+}
+
+:global(.vtex-address-form__container) :global(.vtex-input-prefix__group) {
+  border-radius: 8px;
+  border-color: #e1e6d7;
+  background: #fbfbf8;
+}
+
+:global(.vtex-address-form__container) :global(.vtex-input-prefix__group):focus-within {
+  border-color: var(--didopet-color-primary);
+  box-shadow: 0 0 0 1px var(--didopet-color-primary);
+}
+
+:global(.vtex-address-form__container) :global(.vtex-styleguide-9-x-input) {
+  font-family: var(--didopet-font-body);
+  background: transparent;
+}
+
+/* Nota: el <select> de País/Departamento/Municipio no se pudo confirmar por código
+   fuente en esta pasada (no se investigó el componente Select de vtex.styleguide) —
+   se deja sin estilo específico para no adivinar una clase; hereda tipografía de la
+   cascada general y el borde/foco del piso genérico de la sección 10 si aplica. */
+
+/* 9. Autenticación (vtex.my-authentication v1.9.1 — único handle set con lista
+   oficial pública, developers.vtex.com/docs/guides/vtex-my-authentication). Mismo
+   nivel de detalle que login: caja, checklist de contraseña con iconSuccess/Failure,
+   gestión de sesiones. */
+:global(.vtex-my-authentication-1-x-box_container) {
+  background: #ffffff;
+  border: 1px solid #eef1e8;
+  border-radius: 14px;
+}
+
+@media screen and (min-width: 40em) {
+  :global(.vtex-my-authentication-1-x-box_container) {
+    box-shadow: 0 20px 45px -22px rgba(22, 36, 26, 0.28);
+  }
+}
+
+:global(.vtex-my-authentication-1-x-box_header) {
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--didopet-color-ink);
+  padding: 1.35rem 1.15rem 0.9rem;
+}
+
+@media screen and (min-width: 40em) {
+  :global(.vtex-my-authentication-1-x-box_header) {
+    padding: 1.9rem 1.75rem 1rem;
+  }
+}
+
+:global(.vtex-my-authentication-1-x-box_content) {
+  padding: 0 1.15rem 1.35rem;
+  font-family: var(--didopet-font-body);
+  color: #494a47;
+}
+
+@media screen and (min-width: 40em) {
+  :global(.vtex-my-authentication-1-x-box_content) {
+    padding: 0 1.75rem 1.9rem;
+  }
+}
+
+:global(.vtex-my-authentication-1-x-newPassInput_container),
+:global(.vtex-my-authentication-1-x-currPassInput_container),
+:global(.vtex-my-authentication-1-x-codeInput_container) {
+  margin: 0.9rem 0;
+}
+
+:global(.vtex-my-authentication-1-x-authenticationScreen_container) :global(.vtex-input-prefix__group) {
+  border-radius: 8px;
+  border-color: #e1e6d7;
+  background: #fbfbf8;
+}
+
+:global(.vtex-my-authentication-1-x-authenticationScreen_container) :global(.vtex-input-prefix__group):focus-within {
+  border-color: var(--didopet-color-primary);
+  box-shadow: 0 0 0 1px var(--didopet-color-primary);
+}
+
+/* Checklist "su contraseña debe tener al menos" — íconos de éxito/fallo ya vienen
+   diferenciados por handle propio, se colorean con la paleta de marca (verde = ok,
+   rojo de alerta del Figma = falta). */
+:global(.vtex-my-authentication-1-x-passValidation_content) {
+  font-size: 0.84rem;
+  color: #494a47;
+}
+
+:global(.vtex-my-authentication-1-x-passValidation_iconSuccess) {
+  color: var(--didopet-color-primary);
+}
+
+:global(.vtex-my-authentication-1-x-passValidation_iconFailure) {
+  color: #d6101b;
+}
+
+:global(.vtex-my-authentication-1-x-savePassButton_container) :global(.vtex-button) {
+  background: var(--didopet-color-primary);
+  border-color: var(--didopet-color-primary);
+  color: var(--didopet-color-primary-text);
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+  border-radius: 100px;
+  width: 100%;
+}
+
+:global(.vtex-my-authentication-1-x-savePassButton_container) :global(.vtex-button):hover {
+  background: var(--didopet-color-primary-deep);
+  border-color: var(--didopet-color-primary-deep);
+}
+
+/* Gestión de sesiones */
+:global(.vtex-my-authentication-1-x-loginSessionsBox_title) {
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+  color: var(--didopet-color-ink);
+}
+
+:global(.vtex-my-authentication-1-x-loginSession_currSession) {
+  color: var(--didopet-color-primary-deep);
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+}
+
+:global(.vtex-my-authentication-1-x-loginSession_device) {
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+  color: var(--didopet-color-ink);
+}
+
+:global(.vtex-my-authentication-1-x-loginSession_lastAccess),
+:global(.vtex-my-authentication-1-x-loginSession_originDetails),
+:global(.vtex-my-authentication-1-x-loginSession_fullAddress),
+:global(.vtex-my-authentication-1-x-loginSession_firstAccess) {
+  font-size: 0.85rem;
+  color: #494a47;
+}
+
+/* 10. Piso genérico de inputs/botones para TODA la app, incluyendo Pedidos y
+   Tarjetas de crédito (vtex.my-orders-app / vtex.my-cards son apps cerradas, sin
+   handles propios conocidos — pero renderizan dentro de .vtex-account, así que al
+   menos heredan la marca en cualquier input/botón nativo de vtex.styleguide que usen). */
+:global(.vtex-account) :global(.vtex-button) {
+  border-radius: 100px;
+  font-family: var(--didopet-font-title);
+  font-weight: 700;
+}
+
+:global(.vtex-account) :global(.vtex-input-prefix__group) {
+  border-radius: 8px;
+  border-color: #e1e6d7;
+  background: #fbfbf8;
+}
+
+:global(.vtex-account) :global(.vtex-input-prefix__group):focus-within {
+  border-color: var(--didopet-color-primary);
+  box-shadow: 0 0 0 1px var(--didopet-color-primary);
+}
