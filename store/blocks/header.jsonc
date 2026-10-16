@@ -47,7 +47,7 @@
   "logo#desktop": {
     "props": {
       "title": "Didopet",
-      "href": "https://www.innovacionsamurai.com/",
+      "href": "https://www.didopet.com/",
       "url": "assets/logo-didopet-login.svg",
       "width": "56"
     }
@@ -93,7 +93,7 @@
   "logo#mobile": {
     "props": {
       "title": "Didopet",
-      "href": "https://www.innovacionsamurai.com/",
+      "href": "https://www.didopet.com/",
       "url": "assets/logo-didopet-login.svg",
       "width": "42"
     }

@@ -16,7 +16,7 @@
   "logo#login": {
     "props": {
       "title": "Didopet",
-      "href": "https://www.innovacionsamurai.com/",
+      "href": "https://www.didopet.com/",
       "url": "assets/logo-didopet-login.svg",
       "width": "140",
       "blockClass": "login-logo"
